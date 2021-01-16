@@ -1,0 +1,1 @@
+SELECT copytext('Hello World!');

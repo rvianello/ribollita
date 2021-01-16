@@ -1,0 +1,6 @@
+# directory = 'extension'
+default_version = '0.0'
+# comment = '...'
+# encoding = (default to the database encoding)
+module_pathname = '$libdir/ribollita'
+relocatable = false # or true ?
