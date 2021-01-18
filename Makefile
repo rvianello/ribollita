@@ -1,6 +1,6 @@
 MODULES = ribollita
 EXTENSION = ribollita
-DATA = ribollita--1.0.sql
+DATA = ribollita--0.0.sql
 #DOCS = README.ribollita
 #HEADERS_ribollita = ribollita.h
 
