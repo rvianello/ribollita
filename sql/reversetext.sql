@@ -1,0 +1,1 @@
+SELECT reversetext('Hello World!');
