@@ -11,11 +11,38 @@ if (MSVC)
     add_compile_options(/W4 /WX)
 else()
     # lots of warnings and all warnings as errors
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
+    add_compile_options(-Wall -Wextra) # -pedantic -Werror)
 endif()
 
 find_package(PostgreSQL REQUIRED)
 include_directories(${PostgreSQL_INCLUDE_DIRS})
+link_directories(${PostgreSQL_LIBRARY_DIRS})
+
+find_program(PG_CONFIG pg_config REQUIRED)
+
+macro(run_pg_config arg var)
+    execute_process(COMMAND ${PG_CONFIG} ${arg}
+                    RESULT_VARIABLE pgsql_config_result
+                    OUTPUT_VARIABLE ${var}
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(NOT ${pgsql_config_result} EQUAL 0 OR NOT ${var})
+        message(FATAL_ERROR "${PG_CONFIG} ${arg} failed")
+    endif()
+endmacro()
+
+run_pg_config(--bindir PG_BINDIR)
+run_pg_config(--sharedir PG_SHAREDIR)
+run_pg_config(--pkglibdir PG_PKGLIBDIR)
 
 find_package(RDKit 2020.09.1 REQUIRED)
 include_directories(${RDKit_INCLUDE_DIRS})
+
+add_library(ribollita MODULE
+        ribollita.cpp)
+
+set_target_properties(ribollita PROPERTIES PREFIX "")
+
+install(TARGETS ribollita LIBRARY DESTINATION ${PG_PKGLIBDIR})
+install(FILES
+        ${CMAKE_SOURCE_DIR}/ribollita.control ${CMAKE_SOURCE_DIR}/ribollita--${RIBOLLITA_VERSION}.sql
+        DESTINATION ${PG_SHAREDIR}/extension)
