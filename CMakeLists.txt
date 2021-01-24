@@ -46,3 +46,22 @@ install(TARGETS ribollita LIBRARY DESTINATION ${PG_PKGLIBDIR})
 install(FILES
         ${CMAKE_SOURCE_DIR}/ribollita.control ${CMAKE_SOURCE_DIR}/ribollita--${RIBOLLITA_VERSION}.sql
         DESTINATION ${PG_SHAREDIR}/extension)
+
+run_pg_config (--pgxs PGXS_MAKEFILE)
+get_filename_component(PGXS_MAKEFILESDIR ${PGXS_MAKEFILE} PATH)
+set(PG_REGRESSDIR ${PGXS_MAKEFILESDIR}/../test/regress)
+
+find_program(PG_REGRESS pg_regress HINTS ${PG_REGRESSDIR} REQUIRED)
+
+set(REGRESS create_extension copytext reversetext)
+
+add_custom_target(regression_test
+                  COMMAND ${PG_REGRESS}
+                    --inputdir="${CMAKE_SOURCE_DIR}/regress"
+                    --outputdir="${CMAKE_BINARY_DIR}"
+                    --bindir="${PG_BINDIR}"
+                    --dbname regression
+                    ${REGRESS}
+                  COMMENT Run pg_regress
+                  USES_TERMINAL
+                  )
