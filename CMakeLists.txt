@@ -37,15 +37,7 @@ run_pg_config(--pkglibdir PG_PKGLIBDIR)
 find_package(RDKit 2020.09.1 REQUIRED)
 include_directories(${RDKit_INCLUDE_DIRS})
 
-add_library(ribollita MODULE
-        ribollita.cpp)
-
-set_target_properties(ribollita PROPERTIES PREFIX "")
-
-install(TARGETS ribollita LIBRARY DESTINATION ${PG_PKGLIBDIR})
-install(FILES
-        ${CMAKE_SOURCE_DIR}/ribollita.control ${CMAKE_SOURCE_DIR}/ribollita--${RIBOLLITA_VERSION}.sql
-        DESTINATION ${PG_SHAREDIR}/extension)
+add_subdirectory(src)
 
 run_pg_config (--pgxs PGXS_MAKEFILE)
 get_filename_component(PGXS_MAKEFILESDIR ${PGXS_MAKEFILE} PATH)
