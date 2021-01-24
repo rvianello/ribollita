@@ -38,22 +38,4 @@ find_package(RDKit 2020.09.1 REQUIRED)
 include_directories(${RDKit_INCLUDE_DIRS})
 
 add_subdirectory(src)
-
-run_pg_config (--pgxs PGXS_MAKEFILE)
-get_filename_component(PGXS_MAKEFILESDIR ${PGXS_MAKEFILE} PATH)
-set(PG_REGRESSDIR ${PGXS_MAKEFILESDIR}/../test/regress)
-
-find_program(PG_REGRESS pg_regress HINTS ${PG_REGRESSDIR} REQUIRED)
-
-set(REGRESS create_extension copytext reversetext)
-
-add_custom_target(regression_test
-                  COMMAND ${PG_REGRESS}
-                    --inputdir="${CMAKE_SOURCE_DIR}/regress"
-                    --outputdir="${CMAKE_BINARY_DIR}"
-                    --bindir="${PG_BINDIR}"
-                    --dbname regression
-                    ${REGRESS}
-                  COMMENT Run pg_regress
-                  USES_TERMINAL
-                  )
+add_subdirectory(regress)
