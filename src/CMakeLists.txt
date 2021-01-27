@@ -1,7 +1,13 @@
-add_library(ribollita MODULE
-        ribollita.cpp)
+add_library(
+        ribollita MODULE
+        ribollita.cpp
+        mol.cpp
+        )
 
 set_target_properties(ribollita PROPERTIES PREFIX "")
+
+target_link_libraries(ribollita PUBLIC
+                      RDKit::SmilesParse)
 
 install(TARGETS ribollita LIBRARY DESTINATION ${PG_PKGLIBDIR})
 install(FILES
