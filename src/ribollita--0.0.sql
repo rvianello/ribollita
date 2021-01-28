@@ -25,3 +25,8 @@ CREATE TYPE mol (
    output = mol_out,
    storage = extended
 );
+
+CREATE FUNCTION mol_amw(mol)
+    RETURNS float8
+    AS 'MODULE_PATHNAME', 'mol_amw'
+    LANGUAGE C IMMUTABLE STRICT;

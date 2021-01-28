@@ -2,12 +2,13 @@ add_library(
         ribollita MODULE
         ribollita.cpp
         mol.cpp
+        mol_descriptors.cpp
         )
 
 set_target_properties(ribollita PROPERTIES PREFIX "")
 
 target_link_libraries(ribollita PUBLIC
-                      RDKit::SmilesParse)
+                      RDKit::Descriptors RDKit::SmilesParse)
 
 install(TARGETS ribollita LIBRARY DESTINATION ${PG_PKGLIBDIR})
 install(FILES
