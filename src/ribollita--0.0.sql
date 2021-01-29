@@ -30,3 +30,13 @@ CREATE FUNCTION mol_amw(mol)
     RETURNS float8
     AS 'MODULE_PATHNAME', 'mol_amw'
     LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION mol_from_smiles(cstring)
+    RETURNS mol
+    AS 'MODULE_PATHNAME', 'mol_from_smiles'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION mol_to_smiles(mol)
+    RETURNS cstring
+    AS 'MODULE_PATHNAME', 'mol_to_smiles'
+    LANGUAGE C IMMUTABLE STRICT;

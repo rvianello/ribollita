@@ -2,6 +2,7 @@ add_library(
         ribollita MODULE
         ribollita.cpp
         mol.cpp
+        mol_formats.cpp
         mol_descriptors.cpp
         )
 
