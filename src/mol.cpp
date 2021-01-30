@@ -7,6 +7,7 @@ extern "C" {
 
 #include <postgres.h>
 #include <fmgr.h>
+#include <libpq/pqformat.h>
 
 PG_FUNCTION_INFO_V1(mol_in);
 PG_FUNCTION_INFO_V1(mol_out);
@@ -46,8 +47,7 @@ mol_out(PG_FUNCTION_ARGS)
 {
   bytea *data = PG_GETARG_BYTEA_PP(0);
 
-  std::string pkl;
-  pkl.assign(VARDATA_ANY(data), VARSIZE_ANY_EXHDR(data));
+  std::string pkl(VARDATA_ANY(data), VARSIZE_ANY_EXHDR(data));
   auto *mol = new RDKit::ROMol(pkl);
   std::string smiles = RDKit::MolToSmiles(*mol, true);
   delete mol;
@@ -58,19 +58,24 @@ mol_out(PG_FUNCTION_ARGS)
 Datum
 mol_recv(PG_FUNCTION_ARGS)
 {
-  bytea *data = PG_GETARG_BYTEA_PP(0);
+  StringInfo  buf = (StringInfo) PG_GETARG_POINTER(0);
 
-  std::string pkl;
-  pkl.assign(VARDATA_ANY(data), VARSIZE_ANY_EXHDR(data));
-  auto *mol = new RDKit::ROMol(pkl);
-
-  if (!mol) {
+  try {
+    std::string pkl(buf->data, buf->len);
+    auto *mol = new RDKit::ROMol(pkl);
+    delete mol;
+  }
+  catch (...) {
     ereport(ERROR,
             errcode(ERRCODE_DATA_EXCEPTION),
             errmsg("could not construct molecule"));
   }
 
-  PG_RETURN_BYTEA_P(data);
+  bytea * result = (bytea *) palloc(VARHDRSZ + buf->len);
+  memcpy(VARDATA(result), buf->data, buf->len);
+  SET_VARSIZE(result, VARHDRSZ + buf->len);
+
+  PG_RETURN_BYTEA_P(result);
 }
 
 Datum
