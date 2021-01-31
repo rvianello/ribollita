@@ -5,7 +5,7 @@ extern "C" {
 #include <postgres.h>
 #include <fmgr.h>
 #include <common/base64.h>
-#include <libpq/pqformat.h>
+#include <lib/stringinfo.h>
 
 PG_FUNCTION_INFO_V1(mol_in);
 PG_FUNCTION_INFO_V1(mol_out);
