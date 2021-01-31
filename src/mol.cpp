@@ -73,8 +73,16 @@ mol_recv(PG_FUNCTION_ARGS)
 {
   StringInfo  buf = (StringInfo) PG_GETARG_POINTER(0);
 
+  // the bytea receive function in postgres'
+  // src/backend/utils/adt/varlena.c
+  // seems to assume that the buf's cursor may
+  // be not null, and that could point to the actual
+  // input inside the StringInfo buffer.
+  char *data = buf->data + buf->cursor;
+  int size = buf->len - buf->cursor;
+
   try {
-    std::string pkl(buf->data, buf->len);
+    std::string pkl(data, size);
     auto *mol = new RDKit::ROMol(pkl);
     delete mol;
   }
@@ -84,9 +92,9 @@ mol_recv(PG_FUNCTION_ARGS)
             errmsg("could not construct molecule"));
   }
 
-  bytea * result = (bytea *) palloc(VARHDRSZ + buf->len);
-  memcpy(VARDATA(result), buf->data, buf->len);
-  SET_VARSIZE(result, VARHDRSZ + buf->len);
+  bytea * result = (bytea *) palloc(VARHDRSZ + size);
+  memcpy(VARDATA(result), data, size);
+  SET_VARSIZE(result, VARHDRSZ + size);
 
   PG_RETURN_BYTEA_P(result);
 }
