@@ -50,7 +50,16 @@ CREATE FUNCTION mol_from_smiles(cstring)
     AS 'MODULE_PATHNAME', 'mol_from_smiles'
     LANGUAGE C IMMUTABLE STRICT;
 
-CREATE FUNCTION mol_to_smiles(mol)
+CREATE FUNCTION mol_to_smiles(
+        m mol,
+        isomeric bool DEFAULT true,
+        kekule bool DEFAULT false,
+        root_atom integer DEFAULT -1,
+        canonical bool DEFAULT true,
+        all_bonds_explicit bool DEFAULT false,
+        all_hs_explicit bool DEFAULT false,
+        random bool DEFAULT false 
+        )
     RETURNS cstring
     PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'mol_to_smiles'

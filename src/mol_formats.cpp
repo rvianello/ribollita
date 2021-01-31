@@ -47,11 +47,22 @@ Datum
 mol_to_smiles(PG_FUNCTION_ARGS)
 {
   bytea *data = PG_GETARG_BYTEA_PP(0);
+  bool isomeric = PG_GETARG_BOOL(1);
+  bool kekule = PG_GETARG_BOOL(2);
+  int root_atom = PG_GETARG_INT32(3);
+  bool canonical = PG_GETARG_BOOL(4);
+  bool all_bonds_explicit = PG_GETARG_BOOL(5);
+  bool all_hs_explicit = PG_GETARG_BOOL(6);
+  bool random = PG_GETARG_BOOL(7);
 
   std::string pkl;
   pkl.assign(VARDATA_ANY(data), VARSIZE_ANY_EXHDR(data));
   auto *mol = new RDKit::ROMol(pkl);
-  std::string smiles = RDKit::MolToSmiles(*mol, true);
+  std::string smiles = RDKit::MolToSmiles(
+    *mol,
+    isomeric, kekule, root_atom, canonical,
+    all_bonds_explicit, all_hs_explicit, random
+    );
   delete mol;
 
   PG_RETURN_CSTRING(pnstrdup(smiles.c_str(), smiles.size()));
