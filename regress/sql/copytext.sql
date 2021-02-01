@@ -1,1 +1,0 @@
-SELECT copytext('Hello World!');

@@ -1,6 +1,0 @@
-SELECT reversetext('Hello World!');
- reversetext  
---------------
- !dlroW olleH
-(1 row)
-

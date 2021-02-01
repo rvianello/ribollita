@@ -1,1 +1,0 @@
-SELECT reversetext('Hello World!');

@@ -1,6 +1,0 @@
-SELECT copytext('Hello World!');
-   copytext   
---------------
- Hello World!
-(1 row)
-

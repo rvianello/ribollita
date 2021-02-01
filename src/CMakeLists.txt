@@ -1,3 +1,5 @@
+add_compile_definitions("RIBOLLITA_VERSION=\"${RIBOLLITA_VERSION}\"")
+
 add_library(
         ribollita MODULE
         ribollita.cpp

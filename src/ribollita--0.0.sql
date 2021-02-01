@@ -1,10 +1,22 @@
-CREATE FUNCTION copytext(text) RETURNS text
-     AS 'MODULE_PATHNAME', 'copytext'
-     LANGUAGE C STRICT;
+CREATE FUNCTION ribollita_version()
+    RETURNS cstring
+    AS 'MODULE_PATHNAME', 'ribollita_version'
+    LANGUAGE C IMMUTABLE;
 
-CREATE FUNCTION reversetext(text) RETURNS text
-     AS 'MODULE_PATHNAME', 'reversetext'
-     LANGUAGE C STRICT;
+CREATE FUNCTION rdkit_version()
+    RETURNS cstring
+    AS 'MODULE_PATHNAME', 'rdkit_version'
+    LANGUAGE C IMMUTABLE;
+
+CREATE FUNCTION rdkit_build()
+    RETURNS cstring
+    AS 'MODULE_PATHNAME', 'rdkit_build'
+    LANGUAGE C IMMUTABLE;
+
+CREATE FUNCTION boost_version()
+    RETURNS cstring
+    AS 'MODULE_PATHNAME', 'boost_version'
+    LANGUAGE C IMMUTABLE;
 
 
 CREATE TYPE mol;

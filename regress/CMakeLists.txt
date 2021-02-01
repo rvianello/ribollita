@@ -4,7 +4,7 @@ set(PG_REGRESSDIR ${PGXS_MAKEFILESDIR}/../test/regress)
 
 find_program(PG_REGRESS pg_regress HINTS ${PG_REGRESSDIR} REQUIRED)
 
-set(REGRESS create_extension copytext reversetext)
+set(REGRESS create_extension)
 
 add_custom_target(regression_test
                   COMMAND ${PG_REGRESS}
