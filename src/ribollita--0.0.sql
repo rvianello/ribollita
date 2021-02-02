@@ -1,3 +1,7 @@
+--
+-- version info
+--
+
 CREATE FUNCTION ribollita_version()
     RETURNS cstring
     AS 'MODULE_PATHNAME', 'ribollita_version'
@@ -18,6 +22,9 @@ CREATE FUNCTION boost_version()
     AS 'MODULE_PATHNAME', 'boost_version'
     LANGUAGE C IMMUTABLE;
 
+--
+-- mol type
+--
 
 CREATE TYPE mol;
 
@@ -50,6 +57,10 @@ CREATE TYPE mol (
    storage = extended
 );
 
+--
+-- mol formats
+--
+
 CREATE FUNCTION mol_from_smiles(
         smiles cstring,
         sanitize bool DEFAULT true,
@@ -79,6 +90,10 @@ CREATE FUNCTION mol_to_smiles(
     PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'mol_to_smiles'
     LANGUAGE C IMMUTABLE STRICT;
+
+--
+-- mol descriptors
+--
 
 CREATE FUNCTION mol_amw(mol)
     RETURNS float8
