@@ -17,10 +17,29 @@ Datum
 mol_from_smiles(PG_FUNCTION_ARGS)
 {
   char *data = PG_GETARG_CSTRING(0);
+  bool sanitize = PG_GETARG_BOOL(1);
+  // replacements: not yet supported
+  bool allow_cxsmiles = PG_GETARG_BOOL(2);
+  bool strict_cxsmiles = PG_GETARG_BOOL(3);
+  bool parse_name = PG_GETARG_BOOL(4);
+  bool remove_hs = PG_GETARG_BOOL(5);
+  bool use_legacy_stereo = PG_GETARG_BOOL(6);
+
   bytea *result = nullptr;
 
+  RDKit::SmilesParserParams params = {
+    0, // debugParse: not used
+    sanitize,
+    nullptr, // replacements: not yet supported
+    allow_cxsmiles,
+    strict_cxsmiles,
+    parse_name,
+    remove_hs,
+    use_legacy_stereo
+  };
+
   try {
-    auto *mol = RDKit::SmilesToMol(data);
+    auto *mol = RDKit::SmilesToMol(data, params);
     std::string pkl;
     RDKit::MolPickler::pickleMol(mol, pkl);
     delete mol;

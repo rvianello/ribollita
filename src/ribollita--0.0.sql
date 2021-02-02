@@ -50,13 +50,16 @@ CREATE TYPE mol (
    storage = extended
 );
 
-CREATE FUNCTION mol_amw(mol)
-    RETURNS float8
-    PARALLEL SAFE
-    AS 'MODULE_PATHNAME', 'mol_amw'
-    LANGUAGE C IMMUTABLE STRICT;
-
-CREATE FUNCTION mol_from_smiles(cstring)
+CREATE FUNCTION mol_from_smiles(
+        smiles cstring,
+        sanitize bool DEFAULT true,
+        -- replacements: not yet supported
+        allow_cxsmiles bool DEFAULT true,
+        strict_cxsmiles bool DEFAULT true,
+        parse_name bool DEFAULT false,
+        remove_hs bool DEFAULT true,
+        use_legacy_stereo bool DEFAULT true
+        )
     RETURNS mol
     PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'mol_from_smiles'
@@ -75,4 +78,10 @@ CREATE FUNCTION mol_to_smiles(
     RETURNS cstring
     PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'mol_to_smiles'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION mol_amw(mol)
+    RETURNS float8
+    PARALLEL SAFE
+    AS 'MODULE_PATHNAME', 'mol_amw'
     LANGUAGE C IMMUTABLE STRICT;
