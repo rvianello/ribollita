@@ -58,6 +58,20 @@ CREATE TYPE mol (
 );
 
 --
+-- mol ops
+--
+
+CREATE FUNCTION mol_formal_charge(mol)
+    RETURNS integer
+    AS 'MODULE_PATHNAME', 'mol_formal_charge'
+    LANGUAGE C STRICT IMMUTABLE;
+
+CREATE FUNCTION mol_kekulize(mol)
+    RETURNS mol
+    AS 'MODULE_PATHNAME', 'mol_kekulize'
+    LANGUAGE C STRICT IMMUTABLE;
+
+--
 -- mol formats
 --
 
