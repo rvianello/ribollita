@@ -41,7 +41,9 @@ mol_from_smiles(PG_FUNCTION_ARGS)
   try {
     auto *mol = RDKit::SmilesToMol(data, params);
     std::string pkl;
-    RDKit::MolPickler::pickleMol(mol, pkl);
+    RDKit::MolPickler::pickleMol(
+      mol, pkl,
+      RDKit::PicklerOps::AllProps | RDKit::PicklerOps::CoordsAsDouble);
     delete mol;
     auto sz = pkl.size();
     result = (bytea *) palloc(VARHDRSZ + sz);
@@ -74,8 +76,7 @@ mol_to_smiles(PG_FUNCTION_ARGS)
   bool all_hs_explicit = PG_GETARG_BOOL(6);
   bool random = PG_GETARG_BOOL(7);
 
-  std::string pkl;
-  pkl.assign(VARDATA_ANY(data), VARSIZE_ANY_EXHDR(data));
+  std::string pkl(VARDATA_ANY(data), VARSIZE_ANY_EXHDR(data));
   auto *mol = new RDKit::ROMol(pkl);
   std::string smiles = RDKit::MolToSmiles(
     *mol,
