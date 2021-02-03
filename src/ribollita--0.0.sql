@@ -4,21 +4,25 @@
 
 CREATE FUNCTION ribollita_version()
     RETURNS cstring
+    PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'ribollita_version'
     LANGUAGE C IMMUTABLE;
 
 CREATE FUNCTION rdkit_version()
     RETURNS cstring
+    PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'rdkit_version'
     LANGUAGE C IMMUTABLE;
 
 CREATE FUNCTION rdkit_build()
     RETURNS cstring
+    PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'rdkit_build'
     LANGUAGE C IMMUTABLE;
 
 CREATE FUNCTION boost_version()
     RETURNS cstring
+    PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'boost_version'
     LANGUAGE C IMMUTABLE;
 
@@ -30,21 +34,25 @@ CREATE TYPE mol;
 
 CREATE FUNCTION mol_in(cstring)
     RETURNS mol
+    PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'mol_in'
     LANGUAGE C IMMUTABLE STRICT;
 
 CREATE FUNCTION mol_out(mol)
     RETURNS cstring
+    PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'mol_out'
     LANGUAGE C IMMUTABLE STRICT;
 
 CREATE FUNCTION mol_recv(internal)
     RETURNS mol
+    PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'mol_recv'
     LANGUAGE C STRICT IMMUTABLE;
 
 CREATE FUNCTION mol_send(mol)
     RETURNS bytea
+    PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'mol_send'
     LANGUAGE C STRICT IMMUTABLE;
 
@@ -63,11 +71,13 @@ CREATE TYPE mol (
 
 CREATE FUNCTION mol_formal_charge(mol)
     RETURNS integer
+    PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'mol_formal_charge'
     LANGUAGE C STRICT IMMUTABLE;
 
 CREATE FUNCTION mol_kekulize(mol)
     RETURNS mol
+    PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'mol_kekulize'
     LANGUAGE C STRICT IMMUTABLE;
 
