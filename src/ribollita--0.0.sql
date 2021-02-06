@@ -81,6 +81,26 @@ CREATE FUNCTION mol_kekulize(mol)
     AS 'MODULE_PATHNAME', 'mol_kekulize'
     LANGUAGE C STRICT IMMUTABLE;
 
+CREATE FUNCTION mol_add_hs(
+        mol,
+        explicit_only bool DEFAULT false,
+        add_coords bool DEFAULT false,
+        add_residue_info bool DEFAULT false)
+    RETURNS mol
+    PARALLEL SAFE
+    AS 'MODULE_PATHNAME', 'mol_add_hs'
+    LANGUAGE C STRICT IMMUTABLE;
+
+CREATE FUNCTION mol_remove_hs(
+        mol,
+        explicit_only bool DEFAULT false,
+        add_coords bool DEFAULT false,
+        add_residue_info bool DEFAULT false)
+    RETURNS mol
+    PARALLEL SAFE
+    AS 'MODULE_PATHNAME', 'mol_remove_hs'
+    LANGUAGE C STRICT IMMUTABLE;
+
 CREATE FUNCTION mol_fragments(
         mol,
         sanitize_fragments bool DEFAULT true,

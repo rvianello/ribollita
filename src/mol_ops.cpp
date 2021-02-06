@@ -11,6 +11,8 @@ extern "C" {
 PG_FUNCTION_INFO_V1(mol_formal_charge);
 PG_FUNCTION_INFO_V1(mol_kekulize);
 PG_FUNCTION_INFO_V1(mol_fragments);
+PG_FUNCTION_INFO_V1(mol_add_hs);
+PG_FUNCTION_INFO_V1(mol_remove_hs);
 
 }
 
@@ -34,6 +36,43 @@ mol_kekulize(PG_FUNCTION_ARGS)
   auto *mol = rwmol_from_bytea(data);
 
   RDKit::MolOps::Kekulize(*mol);
+
+  bytea *result = bytea_from_mol(mol);
+  delete mol;
+  PG_RETURN_BYTEA_P(result);
+}
+
+Datum
+mol_add_hs(PG_FUNCTION_ARGS)
+{
+  bytea *data = PG_GETARG_BYTEA_PP(0);
+  bool explicit_only = PG_GETARG_BOOL(1);
+  bool add_coords = PG_GETARG_BOOL(2);
+  // only_on_atoms: not yet supported
+  bool add_residue_info = PG_GETARG_BOOL(3);
+
+  auto *mol = rwmol_from_bytea(data);
+
+  RDKit::MolOps::addHs(
+    *mol, explicit_only, add_coords, nullptr, add_residue_info);
+
+  bytea *result = bytea_from_mol(mol);
+  delete mol;
+  PG_RETURN_BYTEA_P(result);
+}
+
+Datum
+mol_remove_hs(PG_FUNCTION_ARGS)
+{
+  bytea *data = PG_GETARG_BYTEA_PP(0);
+  bool implicit_only = PG_GETARG_BOOL(1);
+  bool update_explicit_count = PG_GETARG_BOOL(2);
+  bool sanitize = PG_GETARG_BOOL(3);
+
+  auto *mol = rwmol_from_bytea(data);
+
+  RDKit::MolOps::removeHs(
+    *mol, implicit_only, update_explicit_count, sanitize);
 
   bytea *result = bytea_from_mol(mol);
   delete mol;
