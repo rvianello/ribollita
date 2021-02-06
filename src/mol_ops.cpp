@@ -80,6 +80,21 @@ mol_remove_hs(PG_FUNCTION_ARGS)
 }
 
 Datum
+mol_remove_all_hs(PG_FUNCTION_ARGS)
+{
+  bytea *data = PG_GETARG_BYTEA_PP(0);
+  bool sanitize = PG_GETARG_BOOL(1);
+
+  auto *mol = rwmol_from_bytea(data);
+
+  RDKit::MolOps::removeAllHs(*mol, sanitize);
+
+  bytea *result = bytea_from_mol(mol);
+  delete mol;
+  PG_RETURN_BYTEA_P(result);
+}
+
+Datum
 mol_fragments(PG_FUNCTION_ARGS)
 {
   bytea *data = PG_GETARG_BYTEA_PP(0);

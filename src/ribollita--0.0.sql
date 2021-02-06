@@ -93,12 +93,20 @@ CREATE FUNCTION mol_add_hs(
 
 CREATE FUNCTION mol_remove_hs(
         mol,
-        explicit_only bool DEFAULT false,
-        add_coords bool DEFAULT false,
-        add_residue_info bool DEFAULT false)
+        implicit_only bool DEFAULT false,
+        update_explicit_count bool DEFAULT false,
+        sanitize bool DEFAULT true)
     RETURNS mol
     PARALLEL SAFE
     AS 'MODULE_PATHNAME', 'mol_remove_hs'
+    LANGUAGE C STRICT IMMUTABLE;
+
+CREATE FUNCTION mol_remove_all_hs(
+        mol,
+        sanitize bool DEFAULT true)
+    RETURNS mol
+    PARALLEL SAFE
+    AS 'MODULE_PATHNAME', 'mol_remove_all_hs'
     LANGUAGE C STRICT IMMUTABLE;
 
 CREATE FUNCTION mol_fragments(
