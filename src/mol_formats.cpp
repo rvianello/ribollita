@@ -1,6 +1,5 @@
 #include <GraphMol/SmilesParse/SmilesParse.h>
 #include <GraphMol/SmilesParse/SmilesWrite.h>
-#include <GraphMol/MolPickler.h>
 
 extern "C" {
 
@@ -12,6 +11,7 @@ PG_FUNCTION_INFO_V1(mol_to_smiles);
 
 }
 
+#include "mol.hpp"
 
 Datum
 mol_from_smiles(PG_FUNCTION_ARGS)
@@ -40,15 +40,8 @@ mol_from_smiles(PG_FUNCTION_ARGS)
 
   try {
     auto *mol = RDKit::SmilesToMol(data, params);
-    std::string pkl;
-    RDKit::MolPickler::pickleMol(
-      mol, pkl,
-      RDKit::PicklerOps::AllProps | RDKit::PicklerOps::CoordsAsDouble);
+    result = bytea_from_mol(mol);
     delete mol;
-    auto sz = pkl.size();
-    result = (bytea *) palloc(VARHDRSZ + sz);
-    memcpy(VARDATA(result), pkl.data(), sz);
-    SET_VARSIZE(result, VARHDRSZ + sz);
   }
   catch (...) {
     ereport(WARNING,
@@ -76,8 +69,7 @@ mol_to_smiles(PG_FUNCTION_ARGS)
   bool all_hs_explicit = PG_GETARG_BOOL(6);
   bool random = PG_GETARG_BOOL(7);
 
-  std::string pkl(VARDATA_ANY(data), VARSIZE_ANY_EXHDR(data));
-  auto *mol = new RDKit::ROMol(pkl);
+  auto *mol = romol_from_bytea(data);
   std::string smiles = RDKit::MolToSmiles(
     *mol,
     isomeric, kekule, root_atom, canonical,

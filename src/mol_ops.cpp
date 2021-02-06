@@ -1,5 +1,4 @@
 #include <GraphMol/MolOps.h>
-#include <GraphMol/MolPickler.h>
 
 extern "C" {
 
@@ -15,13 +14,13 @@ PG_FUNCTION_INFO_V1(mol_fragments);
 
 }
 
+#include "mol.hpp"
+
 Datum
 mol_formal_charge(PG_FUNCTION_ARGS)
 {
   bytea *data = PG_GETARG_BYTEA_PP(0);
-
-  std::string pkl(VARDATA_ANY(data), VARSIZE_ANY_EXHDR(data));
-  auto *mol = new RDKit::ROMol(pkl);
+  auto *mol = romol_from_bytea(data);
   int charge = RDKit::MolOps::getFormalCharge(*mol);
   delete mol;
 
@@ -32,20 +31,12 @@ Datum
 mol_kekulize(PG_FUNCTION_ARGS)
 {
   bytea *data = PG_GETARG_BYTEA_PP(0);
+  auto *mol = rwmol_from_bytea(data);
 
-  std::string pkl(VARDATA_ANY(data), VARSIZE_ANY_EXHDR(data));
-  auto *mol = new RDKit::RWMol(pkl);
   RDKit::MolOps::Kekulize(*mol);
 
-  RDKit::MolPickler::pickleMol(
-    mol, pkl,
-    RDKit::PicklerOps::AllProps | RDKit::PicklerOps::CoordsAsDouble);
+  bytea *result = bytea_from_mol(mol);
   delete mol;
-  auto sz = pkl.size();
-  bytea *result = (bytea *) palloc(VARHDRSZ + sz);
-  memcpy(VARDATA(result), pkl.data(), sz);
-  SET_VARSIZE(result, VARHDRSZ + sz);
-
   PG_RETURN_BYTEA_P(result);
 }
 
@@ -124,8 +115,7 @@ mol_fragments(PG_FUNCTION_ARGS)
   /* initialize our tuplestore (while still in query context!) */
   Tuplestorestate *tupstore = tuplestore_begin_heap(random_access, false, work_mem);
 
-  std::string pkl(VARDATA_ANY(data), VARSIZE_ANY_EXHDR(data));
-  auto *mol = new RDKit::RWMol(pkl);
+  auto *mol = romol_from_bytea(data);
   auto fragment_mols = RDKit::MolOps::getMolFrags(
       *mol, sanitize_fragments, nullptr, nullptr,
       copy_conformers);
@@ -136,14 +126,7 @@ mol_fragments(PG_FUNCTION_ARGS)
   nulls[0] = false;
 
   for (auto frag : fragment_mols) {
-    std::string pkl;
-    RDKit::MolPickler::pickleMol(
-      *frag, pkl,
-      RDKit::PicklerOps::AllProps | RDKit::PicklerOps::CoordsAsDouble);
-    auto sz = pkl.size();
-    bytea *result = (bytea *) palloc(VARHDRSZ + sz);
-    memcpy(VARDATA(result), pkl.data(), sz);
-    SET_VARSIZE(result, VARHDRSZ + sz);
+    bytea *result = bytea_from_mol(*frag);
     values[0] = PointerGetDatum(result);
     HeapTuple tuple = heap_form_tuple(tupdesc, values, nulls);
     tuplestore_puttuple(tupstore, tuple);
