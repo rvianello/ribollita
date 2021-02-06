@@ -81,6 +81,15 @@ CREATE FUNCTION mol_kekulize(mol)
     AS 'MODULE_PATHNAME', 'mol_kekulize'
     LANGUAGE C STRICT IMMUTABLE;
 
+CREATE FUNCTION mol_fragments(
+        mol,
+        sanitize_fragments bool DEFAULT true,
+        copy_conformers bool DEFAULT true)
+    RETURNS TABLE (fragment mol)
+    PARALLEL SAFE
+    AS 'MODULE_PATHNAME', 'mol_fragments'
+    LANGUAGE C STRICT IMMUTABLE;
+
 --
 -- mol formats
 --
