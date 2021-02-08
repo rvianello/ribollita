@@ -101,6 +101,29 @@ CREATE FUNCTION mol_remove_hs(
     AS 'MODULE_PATHNAME', 'mol_remove_hs'
     LANGUAGE C STRICT IMMUTABLE;
 
+CREATE FUNCTION mol_remove_hs_ex(
+        mol,
+        remove_degree_zero bool DEFAULT false,
+        remove_higher_degrees bool DEFAULT false,
+        remove_only_neighbors bool DEFAULT false,
+        remove_isotopes bool DEFAULT false,
+        remove_and_track_isotopes bool DEFAULT false,
+        remove_dummy_neighbors bool DEFAULT false,
+        remove_defining_bond_stereo bool DEFAULT false,
+        remove_with_wedge_bond bool DEFAULT true,
+        remove_with_query bool DEFAULT false,
+        remove_mapped bool DEFAULT true,
+        remove_in_s_groups bool DEFAULT false,
+        show_warnings bool DEFAULT true,
+        implicit_only bool DEFAULT false,
+        update_explicit_count bool DEFAULT false,
+        remove_hydrides bool DEFAULT true,
+        sanitize bool DEFAULT true)
+    RETURNS mol
+    PARALLEL SAFE
+    AS 'MODULE_PATHNAME', 'mol_remove_hs_ex'
+    LANGUAGE C STRICT IMMUTABLE;
+
 CREATE FUNCTION mol_remove_all_hs(
         mol,
         sanitize bool DEFAULT true)

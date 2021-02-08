@@ -13,6 +13,8 @@ PG_FUNCTION_INFO_V1(mol_kekulize);
 PG_FUNCTION_INFO_V1(mol_fragments);
 PG_FUNCTION_INFO_V1(mol_add_hs);
 PG_FUNCTION_INFO_V1(mol_remove_hs);
+PG_FUNCTION_INFO_V1(mol_remove_hs_ex);
+PG_FUNCTION_INFO_V1(mol_remove_all_hs);
 
 }
 
@@ -73,6 +75,54 @@ mol_remove_hs(PG_FUNCTION_ARGS)
 
   RDKit::MolOps::removeHs(
     *mol, implicit_only, update_explicit_count, sanitize);
+
+  bytea *result = bytea_from_mol(mol);
+  delete mol;
+  PG_RETURN_BYTEA_P(result);
+}
+
+Datum
+mol_remove_hs_ex(PG_FUNCTION_ARGS)
+{
+  bytea *data = PG_GETARG_BYTEA_PP(0);
+  bool remove_degree_zero = PG_GETARG_BOOL(1);
+  bool remove_higher_degrees = PG_GETARG_BOOL(2);
+  bool remove_only_neighbors = PG_GETARG_BOOL(3);
+  bool remove_isotopes = PG_GETARG_BOOL(4);
+  bool remove_and_track_isotopes = PG_GETARG_BOOL(5);
+  bool remove_dummy_neighbors = PG_GETARG_BOOL(6);
+  bool remove_defining_bond_stereo = PG_GETARG_BOOL(7);
+  bool remove_with_wedge_bond = PG_GETARG_BOOL(8);
+  bool remove_with_query = PG_GETARG_BOOL(9);
+  bool remove_mapped = PG_GETARG_BOOL(10);
+  bool remove_in_s_groups = PG_GETARG_BOOL(11);
+  bool show_warnings = PG_GETARG_BOOL(12);
+  bool implicit_only = PG_GETARG_BOOL(13);
+  bool update_explicit_count = PG_GETARG_BOOL(14);
+  bool remove_hydrides = PG_GETARG_BOOL(15);
+  bool sanitize = PG_GETARG_BOOL(16);
+
+  auto *mol = rwmol_from_bytea(data);
+
+  RDKit::MolOps::RemoveHsParameters params = {
+    remove_degree_zero,
+    remove_higher_degrees,
+    remove_only_neighbors,
+    remove_isotopes,
+    remove_and_track_isotopes,
+    remove_dummy_neighbors,
+    remove_defining_bond_stereo,
+    remove_with_wedge_bond,
+    remove_with_query,
+    remove_mapped,
+    remove_in_s_groups,
+    show_warnings,
+    !implicit_only,
+    update_explicit_count,
+    remove_hydrides
+  };
+
+  RDKit::MolOps::removeHs(*mol, params, sanitize);
 
   bytea *result = bytea_from_mol(mol);
   delete mol;
