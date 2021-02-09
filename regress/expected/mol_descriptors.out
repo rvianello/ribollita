@@ -1,0 +1,44 @@
+SELECT mol_amw(mol_from_smiles('CCN)'));
+WARNING:  could not construct molecule
+ mol_amw 
+---------
+        
+(1 row)
+
+SELECT mol_amw(mol_from_smiles('CC(=O)O'));
+      mol_amw      
+-------------------
+ 60.05200000000001
+(1 row)
+
+SELECT mol_amw(mol_from_smiles('c1ccccc1'));
+      mol_amw      
+-------------------
+ 78.11399999999999
+(1 row)
+
+SELECT mol_amw(mol_from_smiles(NULL));
+ mol_amw 
+---------
+        
+(1 row)
+
+SELECT mol_amw(mol_from_smiles('xyz'));
+WARNING:  could not construct molecule
+ mol_amw 
+---------
+        
+(1 row)
+
+SELECT mol_amw(mol_from_smiles(''));
+ mol_amw 
+---------
+       0
+(1 row)
+
+SELECT mol_amw(mol_from_smiles('C1CCCCC1'));
+ mol_amw 
+---------
+  84.162
+(1 row)
+

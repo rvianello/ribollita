@@ -4,7 +4,12 @@ set(PG_REGRESSDIR ${PGXS_MAKEFILESDIR}/../test/regress)
 
 find_program(PG_REGRESS pg_regress HINTS ${PG_REGRESSDIR} REQUIRED)
 
-set(REGRESS create_extension)
+set(REGRESS
+  create_extension
+  mol_formats
+  mol_ops
+  mol_descriptors
+  )
 
 add_custom_target(regression_test
                   COMMAND ${PG_REGRESS}

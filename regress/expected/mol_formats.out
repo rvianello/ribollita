@@ -1,0 +1,36 @@
+SELECT mol_to_smiles(mol_from_smiles('C1OCCCC1'));
+ mol_to_smiles 
+---------------
+ C1CCOCC1
+(1 row)
+
+SELECT mol_to_smiles(mol_from_smiles('OC=CC'));
+ mol_to_smiles 
+---------------
+ CC=CO
+(1 row)
+
+SELECT mol_to_smiles(mol_from_smiles('OC=CC'), canonical => false);
+ mol_to_smiles 
+---------------
+ OC=CC
+(1 row)
+
+SELECT mol_to_smiles(mol_from_smiles('F[C@](Cl)(Br)I'));
+ mol_to_smiles  
+----------------
+ F[C@](Cl)(Br)I
+(1 row)
+
+SELECT mol_to_smiles(mol_from_smiles('F[C@](Cl)(Br)I'), isomeric => false);
+ mol_to_smiles 
+---------------
+ FC(Cl)(Br)I
+(1 row)
+
+SELECT mol_to_smiles(mol_from_smiles('F[C@](Cl)(Br)I'), all_bonds_explicit => true);
+   mol_to_smiles    
+--------------------
+ F-[C@](-Cl)(-Br)-I
+(1 row)
+

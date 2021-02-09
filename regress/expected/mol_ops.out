@@ -1,0 +1,20 @@
+select mol_to_smiles(mol_kekulize(mol_from_smiles('c1ccccc1')));
+ mol_to_smiles 
+---------------
+ C1=CC=CC=C1
+(1 row)
+
+select mol_to_smiles(fragment) from mol_fragments(mol_from_smiles('C.CC.COC'));
+ mol_to_smiles 
+---------------
+ C
+ CC
+ COC
+(3 rows)
+
+select mol_formal_charge(mol_from_smiles('CC(=O)[O-]'));
+ mol_formal_charge 
+-------------------
+                -1
+(1 row)
+
