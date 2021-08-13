@@ -34,7 +34,7 @@ run_pg_config(--bindir PG_BINDIR)
 run_pg_config(--sharedir PG_SHAREDIR)
 run_pg_config(--pkglibdir PG_PKGLIBDIR)
 
-find_package(RDKit 2020.09.1 REQUIRED)
+find_package(RDKit 2021.09.1 REQUIRED)
 include_directories(${RDKit_INCLUDE_DIRS})
 
 add_subdirectory(src)
