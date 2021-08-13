@@ -7,9 +7,6 @@ extern "C" {
 
 }
 
-#include <algorithm>
-#include <cstring>
-
 extern "C" {
 
 PG_MODULE_MAGIC;
