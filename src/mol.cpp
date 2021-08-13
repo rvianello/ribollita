@@ -1,3 +1,5 @@
+#include <memory>
+
 #include <GraphMol/MolPickler.h>
 
 extern "C" {
@@ -34,8 +36,7 @@ mol_in(PG_FUNCTION_ARGS)
 
   try {
     std::string pkl(data, data_len);
-    auto *mol = new RDKit::ROMol(pkl);
-    delete mol;
+    std::unique_ptr<RDKit::ROMol> mol(new RDKit::ROMol(pkl));
   }
   catch (...) {
     ereport(ERROR,
@@ -84,8 +85,7 @@ mol_recv(PG_FUNCTION_ARGS)
 
   try {
     std::string pkl(data, size);
-    auto *mol = new RDKit::ROMol(pkl);
-    delete mol;
+    std::unique_ptr<RDKit::ROMol> mol(new RDKit::ROMol(pkl));
   }
   catch (...) {
     ereport(ERROR,
@@ -112,17 +112,12 @@ bytea * bytea_from_mol(const RDKit::ROMol * mol)
   std::string pkl;
   RDKit::MolPickler::pickleMol(
     mol, pkl,
-    RDKit::PicklerOps::AllProps | RDKit::PicklerOps::CoordsAsDouble);
+    RDKit::PicklerOps::MolProps | RDKit::PicklerOps::CoordsAsDouble);
   auto sz = pkl.size();
   bytea *data = (bytea *) palloc(VARHDRSZ + sz);
   memcpy(VARDATA(data), pkl.data(), sz);
   SET_VARSIZE(data, VARHDRSZ + sz);
   return data;
-}
-
-bytea * bytea_from_mol(const RDKit::ROMol & mol)
-{
-    return bytea_from_mol(&mol);
 }
 
 RDKit::ROMol * romol_from_bytea(bytea *data)

@@ -230,7 +230,7 @@ mol_fragments(PG_FUNCTION_ARGS)
   nulls[0] = false;
 
   for (auto frag : fragment_mols) {
-    bytea *result = bytea_from_mol(*frag);
+    bytea *result = bytea_from_mol(frag.get());
     values[0] = PointerGetDatum(result);
     HeapTuple tuple = heap_form_tuple(tupdesc, values, nulls);
     tuplestore_puttuple(tupstore, tuple);
