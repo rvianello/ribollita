@@ -1,3 +1,5 @@
+#include <memory>
+
 #include <GraphMol/SmilesParse/SmilesParse.h>
 #include <GraphMol/SmilesParse/SmilesWrite.h>
 
@@ -39,9 +41,8 @@ mol_from_smiles(PG_FUNCTION_ARGS)
   };
 
   try {
-    auto *mol = RDKit::SmilesToMol(data, params);
-    result = bytea_from_mol(mol);
-    delete mol;
+    std::unique_ptr<RDKit::ROMol> mol(RDKit::SmilesToMol(data, params));
+    result = bytea_from_mol(mol.get());
   }
   catch (...) {
     ereport(WARNING,
@@ -69,13 +70,12 @@ mol_to_smiles(PG_FUNCTION_ARGS)
   bool all_hs_explicit = PG_GETARG_BOOL(6);
   bool random = PG_GETARG_BOOL(7);
 
-  auto *mol = romol_from_bytea(data);
+  std::unique_ptr<RDKit::ROMol> mol(romol_from_bytea(data));
   std::string smiles = RDKit::MolToSmiles(
     *mol,
     isomeric, kekule, root_atom, canonical,
     all_bonds_explicit, all_hs_explicit, random
     );
-  delete mol;
 
   PG_RETURN_CSTRING(pnstrdup(smiles.c_str(), smiles.size()));
 }
