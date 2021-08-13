@@ -3,12 +3,7 @@
 {
 	"name": "Ribollita development",
 	"dockerFile": "Dockerfile",
-	"runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined"],
-
-	// Set *default* container specific settings.json values on container create.
-	"settings": { 
-		"terminal.integrated.shell.linux": "/bin/bash"
-	},
+	"runArgs": ["--userns=keep-id", "--cap-add=SYS_PTRACE", "--security-opt", "label=disable"],
 
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
@@ -27,6 +22,6 @@
 	},
 	
 	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
-	"remoteUser": "vscode"
+	"containerUser": "vscode"
 
 }

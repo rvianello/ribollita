@@ -1,4 +1,4 @@
-FROM docker.io/fedora:33 AS builder
+FROM docker.io/fedora:34 AS builder
 ARG POSTGRES=13.1
 ARG USERNAME=vscode
 ARG USER_UID=1000
@@ -38,7 +38,7 @@ USER root
 
 RUN cd build && make install-world
 
-FROM rvianello/fedora-rdkit-cpp:33-2020.09.3
+FROM rvianello/fedora-rdkit-cpp:34-e32810c
 
 # This Dockerfile image has a non-root user with sudo access. Use the "remoteUser"
 # # property in devcontainer.json to use it. On Linux, the container user's GID/UIDs
@@ -66,6 +66,7 @@ RUN dnf install -y \
     redhat-rpm-config \
     valgrind \
     which \
+    zlib-devel \
     \
     # Create a non-root user to use if preferred - see https://aka.ms/vscode-remote/containers/non-root-user.
     && groupadd --gid $USER_GID $USERNAME \
