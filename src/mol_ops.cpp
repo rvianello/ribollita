@@ -1,3 +1,5 @@
+#include <memory>
+
 #include <GraphMol/MolOps.h>
 
 extern "C" {
@@ -24,9 +26,8 @@ Datum
 mol_formal_charge(PG_FUNCTION_ARGS)
 {
   bytea *data = PG_GETARG_BYTEA_PP(0);
-  auto *mol = romol_from_bytea(data);
+  std::unique_ptr<RDKit::ROMol> mol(romol_from_bytea(data));
   int charge = RDKit::MolOps::getFormalCharge(*mol);
-  delete mol;
 
   PG_RETURN_INT32(charge);
 }
@@ -35,12 +36,10 @@ Datum
 mol_kekulize(PG_FUNCTION_ARGS)
 {
   bytea *data = PG_GETARG_BYTEA_PP(0);
-  auto *mol = rwmol_from_bytea(data);
-
+  std::unique_ptr<RDKit::RWMol> mol(rwmol_from_bytea(data));
   RDKit::MolOps::Kekulize(*mol);
+  bytea *result = bytea_from_mol(mol.get());
 
-  bytea *result = bytea_from_mol(mol);
-  delete mol;
   PG_RETURN_BYTEA_P(result);
 }
 
@@ -53,13 +52,13 @@ mol_add_hs(PG_FUNCTION_ARGS)
   // only_on_atoms: not yet supported
   bool add_residue_info = PG_GETARG_BOOL(3);
 
-  auto *mol = rwmol_from_bytea(data);
+  std::unique_ptr<RDKit::RWMol> mol(rwmol_from_bytea(data));
 
   RDKit::MolOps::addHs(
     *mol, explicit_only, add_coords, nullptr, add_residue_info);
 
-  bytea *result = bytea_from_mol(mol);
-  delete mol;
+  bytea *result = bytea_from_mol(mol.get());
+
   PG_RETURN_BYTEA_P(result);
 }
 
@@ -71,13 +70,13 @@ mol_remove_hs(PG_FUNCTION_ARGS)
   bool update_explicit_count = PG_GETARG_BOOL(2);
   bool sanitize = PG_GETARG_BOOL(3);
 
-  auto *mol = rwmol_from_bytea(data);
+  std::unique_ptr<RDKit::RWMol> mol(rwmol_from_bytea(data));
 
   RDKit::MolOps::removeHs(
     *mol, implicit_only, update_explicit_count, sanitize);
 
-  bytea *result = bytea_from_mol(mol);
-  delete mol;
+  bytea *result = bytea_from_mol(mol.get());
+
   PG_RETURN_BYTEA_P(result);
 }
 
@@ -102,7 +101,7 @@ mol_remove_hs_ex(PG_FUNCTION_ARGS)
   bool remove_hydrides = PG_GETARG_BOOL(15);
   bool sanitize = PG_GETARG_BOOL(16);
 
-  auto *mol = rwmol_from_bytea(data);
+  std::unique_ptr<RDKit::RWMol> mol(rwmol_from_bytea(data));
 
   RDKit::MolOps::RemoveHsParameters params = {
     remove_degree_zero,
@@ -124,8 +123,8 @@ mol_remove_hs_ex(PG_FUNCTION_ARGS)
 
   RDKit::MolOps::removeHs(*mol, params, sanitize);
 
-  bytea *result = bytea_from_mol(mol);
-  delete mol;
+  bytea *result = bytea_from_mol(mol.get());
+
   PG_RETURN_BYTEA_P(result);
 }
 
@@ -135,12 +134,12 @@ mol_remove_all_hs(PG_FUNCTION_ARGS)
   bytea *data = PG_GETARG_BYTEA_PP(0);
   bool sanitize = PG_GETARG_BOOL(1);
 
-  auto *mol = rwmol_from_bytea(data);
+  std::unique_ptr<RDKit::RWMol> mol(rwmol_from_bytea(data));
 
   RDKit::MolOps::removeAllHs(*mol, sanitize);
 
-  bytea *result = bytea_from_mol(mol);
-  delete mol;
+  bytea *result = bytea_from_mol(mol.get());
+
   PG_RETURN_BYTEA_P(result);
 }
 
@@ -219,11 +218,10 @@ mol_fragments(PG_FUNCTION_ARGS)
   /* initialize our tuplestore (while still in query context!) */
   Tuplestorestate *tupstore = tuplestore_begin_heap(random_access, false, work_mem);
 
-  auto *mol = romol_from_bytea(data);
+  std::unique_ptr<RDKit::ROMol> mol(romol_from_bytea(data));
   auto fragment_mols = RDKit::MolOps::getMolFrags(
       *mol, sanitize_fragments, nullptr, nullptr,
       copy_conformers);
-  delete mol;
 
   Datum values[1];
   bool nulls[1];
