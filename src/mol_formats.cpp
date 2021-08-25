@@ -70,7 +70,7 @@ mol_to_smiles(PG_FUNCTION_ARGS)
   bool all_hs_explicit = PG_GETARG_BOOL(6);
   bool random = PG_GETARG_BOOL(7);
 
-  std::unique_ptr<RDKit::ROMol> mol(romol_from_bytea(data));
+  std::unique_ptr<RDKit::RWMol> mol(mol_from_bytea(data));
   std::string smiles = RDKit::MolToSmiles(
     *mol,
     isomeric, kekule, root_atom, canonical,
