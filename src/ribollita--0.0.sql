@@ -175,6 +175,29 @@ CREATE FUNCTION mol_to_smiles(
     AS 'MODULE_PATHNAME', 'mol_to_smiles'
     LANGUAGE C IMMUTABLE STRICT;
 
+CREATE FUNCTION mol_from_molblock(
+        molblock cstring,
+        sanitize bool DEFAULT true,
+        remove_hs bool DEFAULT true,
+        strict_parsing bool DEFAULT true
+        )
+    RETURNS mol
+    PARALLEL SAFE
+    AS 'MODULE_PATHNAME', 'mol_from_molblock'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION mol_to_molblock(
+        m mol,
+        include_stereo bool DEFAULT true,
+        conf_id integer DEFAULT -1,
+        kekulize bool DEFAULT true,
+        allow_v2000 bool DEFAULT false
+        )
+    RETURNS cstring
+    PARALLEL SAFE
+    AS 'MODULE_PATHNAME', 'mol_to_molblock'
+    LANGUAGE C IMMUTABLE STRICT;
+
 --
 -- mol descriptors
 --
