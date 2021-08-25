@@ -120,13 +120,7 @@ bytea * bytea_from_mol(const RDKit::ROMol * mol)
   return data;
 }
 
-RDKit::ROMol * romol_from_bytea(bytea *data)
-{
-  std::string pkl(VARDATA_ANY(data), VARSIZE_ANY_EXHDR(data));
-  return new RDKit::ROMol(pkl);
-}
-
-RDKit::RWMol * rwmol_from_bytea(bytea *data)
+RDKit::RWMol * mol_from_bytea(bytea *data)
 {
   std::string pkl(VARDATA_ANY(data), VARSIZE_ANY_EXHDR(data));
   return new RDKit::RWMol(pkl);
