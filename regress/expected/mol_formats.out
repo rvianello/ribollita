@@ -34,3 +34,29 @@ SELECT mol_to_smiles(mol_from_smiles('F[C@](Cl)(Br)I'), all_bonds_explicit => tr
  F-[C@](-Cl)(-Br)-I
 (1 row)
 
+SELECT mol_to_molblock(mol_from_smiles(''));
+             mol_to_molblock             
+-----------------------------------------
+                                        +
+      RDKit          2D                 +
+                                        +
+   0  0  0  0  0  0  0  0  0  0999 V3000+
+ M  V30 BEGIN CTAB                      +
+ M  V30 COUNTS 0 0 0 0 0                +
+ M  V30 BEGIN ATOM                      +
+ M  V30 END ATOM                        +
+ M  V30 END CTAB                        +
+ M  END                                 +
+ 
+(1 row)
+
+SELECT mol_to_smiles(mol_from_molblock(
+    (Chr(10) || Chr(10) || Chr(10) ||
+    '  0  0  0  0  0  0  0  0  0  0999 V2000' || Chr(10) ||
+    'M  END')::cstring
+    ));
+ mol_to_smiles 
+---------------
+ 
+(1 row)
+
