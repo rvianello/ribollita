@@ -7,6 +7,8 @@ SELECT mol_to_smiles(mol_from_smiles('F[C@](Cl)(Br)I'));
 SELECT mol_to_smiles(mol_from_smiles('F[C@](Cl)(Br)I'), isomeric => false);
 SELECT mol_to_smiles(mol_from_smiles('F[C@](Cl)(Br)I'), all_bonds_explicit => true);
 
+SELECT mol_to_smarts(mol_from_smarts('c1ccc[n,c]c1'));
+
 SELECT mol_to_molblock(mol_from_smiles(''));
 SELECT mol_to_smiles(mol_from_molblock(
     (Chr(10) || Chr(10) || Chr(10) ||

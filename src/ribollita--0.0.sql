@@ -175,6 +175,28 @@ CREATE FUNCTION mol_to_smiles(
     AS 'MODULE_PATHNAME', 'mol_to_smiles'
     LANGUAGE C IMMUTABLE STRICT;
 
+CREATE FUNCTION mol_from_smarts(
+        smiles cstring,
+        -- replacements: not yet supported
+        allow_cxsmiles bool DEFAULT true,
+        strict_cxsmiles bool DEFAULT true,
+        parse_name bool DEFAULT false,
+        merge_hs bool DEFAULT true
+        )
+    RETURNS mol
+    PARALLEL SAFE
+    AS 'MODULE_PATHNAME', 'mol_from_smarts'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION mol_to_smarts(
+        m mol,
+        isomeric bool DEFAULT true
+        )
+    RETURNS cstring
+    PARALLEL SAFE
+    AS 'MODULE_PATHNAME', 'mol_to_smarts'
+    LANGUAGE C IMMUTABLE STRICT;
+
 CREATE FUNCTION mol_from_molblock(
         molblock cstring,
         sanitize bool DEFAULT true,

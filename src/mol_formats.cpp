@@ -2,6 +2,7 @@
 
 #include <GraphMol/SmilesParse/SmilesParse.h>
 #include <GraphMol/SmilesParse/SmilesWrite.h>
+#include <GraphMol/SmilesParse/SmartsWrite.h>
 #include <GraphMol/FileParsers/FileParsers.h>
 
 extern "C" {
@@ -11,6 +12,8 @@ extern "C" {
 
 PG_FUNCTION_INFO_V1(mol_from_smiles);
 PG_FUNCTION_INFO_V1(mol_to_smiles);
+PG_FUNCTION_INFO_V1(mol_from_smarts);
+PG_FUNCTION_INFO_V1(mol_to_smarts);
 PG_FUNCTION_INFO_V1(mol_from_molblock);
 PG_FUNCTION_INFO_V1(mol_to_molblock);
 
@@ -81,6 +84,57 @@ mol_to_smiles(PG_FUNCTION_ARGS)
     );
 
   PG_RETURN_CSTRING(pnstrdup(smiles.c_str(), smiles.size()));
+}
+
+Datum
+mol_from_smarts(PG_FUNCTION_ARGS)
+{
+  char *data = PG_GETARG_CSTRING(0);
+  // replacements: not yet supported
+  bool allow_cxsmiles = PG_GETARG_BOOL(1);
+  bool strict_cxsmiles = PG_GETARG_BOOL(2);
+  bool parse_name = PG_GETARG_BOOL(3);
+  bool merge_hs = PG_GETARG_BOOL(4);
+
+  bytea *result = nullptr;
+
+  RDKit::SmartsParserParams params = {
+    0, // debugParse: not used
+    nullptr, // replacements: not yet supported
+    allow_cxsmiles,
+    strict_cxsmiles,
+    parse_name,
+    merge_hs
+  };
+
+  try {
+    std::unique_ptr<RDKit::ROMol> mol(RDKit::SmartsToMol(data, params));
+    result = bytea_from_mol(mol.get());
+  }
+  catch (...) {
+    ereport(WARNING,
+            errcode(ERRCODE_DATA_EXCEPTION),
+            errmsg("could not construct molecule"));
+  }
+
+  if (result) {
+    PG_RETURN_BYTEA_P(result);
+  }
+  else {
+    PG_RETURN_NULL();
+  }
+}
+
+Datum
+mol_to_smarts(PG_FUNCTION_ARGS)
+{
+  bytea *data = PG_GETARG_BYTEA_PP(0);
+  bool isomeric = PG_GETARG_BOOL(1);
+
+  std::unique_ptr<RDKit::RWMol> mol(mol_from_bytea(data));
+  std::string smarts = RDKit::MolToSmarts(*mol, isomeric);
+
+  PG_RETURN_CSTRING(pnstrdup(smarts.c_str(), smarts.size()));
 }
 
 Datum
